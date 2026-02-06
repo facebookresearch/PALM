@@ -1,0 +1,170 @@
+defaults:
+  - _self_
+  - dataset: null
+  - sampler: edge
+  - geometry: progressive_hash_grid
+  - radiance: progressive_hash_grid
+  - material: shallow_mlp
+  - scatterer: brdf-multi-lobe
+  - light: envlight_SG
+  - deformer: snarf_deformer
+  - density: laplace-density
+  - pose_encoder: flat
+  - pose_correction: pose_residual
+  - latent_code: latent_code
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+# Disable Hydra's automatic logging
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+pose_correction_wd: 0.00001
+color_grid_wd: 0.0001
+
+seed: 42
+# gpu: '0,1'
+gpu: '0'
+no_mesh: false
+resume: null
+resume_weights_only: false
+mode: train
+trial_name: 'xxxx-xxxx-xxx'
+exp_dir: exp
+log_dir: null
+save_dir: null 
+render_dir: null
+ckpt_dir: null 
+code_dir: null 
+config_dir: null
+runs_dir: runs
+verbose: false
+personalize: false
+enable_phys: false # only for infer
+refresh_rate: 1 # tqdm rate
+seq_idx: -1
+seq_name: null
+job_id: null
+
+model:
+  global_illumination: true
+  render_mode: uniform_light
+  scene_aabb: ${dataset.scene_aabb}
+  subject_ids: ${dataset.opt.train.subject_ids}
+  samples_per_pixel: 512
+  num_samples_per_ray: 128
+  num_samples_per_secondary_ray: 64
+  secondary_shader_chunk: 40000
+  secondary_near_plane: 0.0
+  secondary_far_plane: 1.5
+  secondary_importance_sample: true
+  pose_dim: 32
+  resample_light: true  # true for quantitative evaluation of relighting, false for generating animation
+  volume_scattering: true
+  add_emitter: false  # if true, merge emitter into predicted RGB image as the background
+  grid_prune: true
+  grid_prune_occ_thre: 0.001
+  grid_prune_ema_decay: 0.8
+  randomized: true  # stratified sampling on primary rays
+  ray_chunk: 5120 # for desktop
+  vgg_start_step: 5
+  warmup_steps: 6001
+  normal_start_step: 6001
+  phys_kick_in_step: 12001
+  batch_size: 4
+  loader_size: null
+  pretrain_version: 'flat_hand.right.dim32.7subj.feb.23.pt'
+  importance_sample_kick_in_step: 1000
+  background_color: random
+  density: ${density}
+  pose_encoder: ${pose_encoder}
+  geometry: ${geometry}
+  radiance: ${radiance}
+  material: ${material}
+  scatterer: ${scatterer}
+  light: ${light}
+  deformer: ${deformer}
+  pose_correction: ${pose_correction}
+  shape_code: ${latent_code}
+  appearance_code: ${latent_code}
+
+system:
+  optimizer:
+    name: Adam
+    args:
+      lr: 0.001
+      betas: [0.9, 0.99]
+      eps: 1.e-15
+    params:
+      pose_correction:
+          lr: 0.0005
+          weight_decay: ${pose_correction_wd}
+      shape_code:
+          lr: 0.0005
+      appearance_code:
+          lr: 0.0005
+      pose_encoder:
+          lr: 0.0005
+      deformer:
+          lr: 0.0005
+      geometry:
+          lr: 0.0005
+      radiance.network:
+          lr: ${system.optimizer.args.lr}
+      radiance.xyz_encoding:
+          lr: ${system.optimizer.args.lr}
+          weight_decay: ${color_grid_wd}
+      density:
+          lr: 0.001
+      material:
+          lr: ${system.optimizer.args.lr}
+      emitter:
+          lr: ${system.optimizer.args.lr}
+  warmup_steps: 1000
+  scheduler:
+    name: SequentialLR
+    interval: step
+    milestones:
+      - ${system.warmup_steps}
+    schedulers:
+      - name: LinearLR # linear warm-up in the first system.warmup_steps steps
+        args:
+          start_factor: 0.01
+          end_factor: 1.0
+          total_iters: ${system.warmup_steps}
+      - name: MultiStepLR
+        args:
+          milestones: [480000000000] # never
+          gamma: 0.1
+
+checkpoint:
+  save_top_k: -1
+  save_last: true
+
+export:
+  chunk_size: 2097152
+  export_vertex_color: False 
+
+trainer:
+  max_steps: 2500000
+  log_every_n_steps: 100
+  num_sanity_val_steps: 0
+  val_check_interval: 6000
+  check_val_every_n_epoch: null
+  limit_train_batches: 1.0
+  limit_val_batches: 2000
+  enable_progress_bar: true 
+  precision: 32
+
+fast: false
+sanity: false
+rf_only: false
+cluster: false
+pretrain: false
+no_lr: false
+relight: false
+render_interhand: false
+shape_code_basis_path: null
+appearance_code_basis_path: null

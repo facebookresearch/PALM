@@ -1,0 +1,11 @@
+torch
+torchvision
+torchaudio
+matplotlib
+pillow
+pyparsing
+tqdm
+git+https://github.com/zc-alexfan/smplx.git@0d7747fa24
+scipy==1.15.3
+chumpy==0.70
+numpy==1.23.5

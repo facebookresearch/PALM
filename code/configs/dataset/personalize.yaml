@@ -1,0 +1,34 @@
+train_split: 'train'
+val_split: 'val'
+test_split: 'test'
+name: personalize
+dataroot: ./load/personalize/<<<SEQNAME>>>/folders/
+scene_aabb: [-0.15, -0.15, -0.15, 0.15, 0.15, 0.15]
+hdri_filepath: null
+opt:
+  train:
+    subject_ids: ["_train"]
+    num_workers: 64
+    batch_size: 1
+    downscale: 1
+    sampler: ${sampler}
+    fitting: false
+    refine: false
+    use_vgg: true ## TODO: Move to cmd
+    shuffle: true
+    personalize: true
+  val:
+    subject_ids: ["_train"]
+    num_workers: 0
+    batch_size: 1
+    downscale: 1
+    use_vgg: false
+    personalize: true
+  test:
+    subject_ids: ["_val"]
+    num_workers: 0
+    batch_size: 1
+    downscale: 1
+    use_vgg: false
+    # downscale: 32
+    personalize: true

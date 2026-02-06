@@ -1,0 +1,5 @@
+name: latent_code
+# latent_code_start_step: 3000
+latent_code_start_step: 1 # because randn init
+latent_dim: 32
+basis_path: null
