@@ -10,7 +10,7 @@ pillow
 pyexr==0.4.0
 PyMCubes==0.1.6
 pyrender
-pytorch-lightning==1.9.5
+pytorch-lightning==2.4.0
 PyYAML
 scikit-learn
 scipy
