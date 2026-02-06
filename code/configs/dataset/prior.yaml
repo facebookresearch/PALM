@@ -1,0 +1,34 @@
+train_split: 'train'
+val_split: 'val'
+test_split: 'test'
+name: PALM
+dataroot: ./load/PALM/XR20B/folders/
+scene_aabb: [-0.15, -0.15, -0.15, 0.15, 0.15, 0.15]
+hdri_filepath: null
+opt:
+  train:
+    subject_ids: ["00:262"]
+    num_workers: 64
+    batch_size: 1
+    downscale: 1
+    sampler: ${sampler}
+    fitting: false
+    refine: false
+    shuffle: true
+    use_vgg: true ## TODO: Move to cmd
+    personalize: false
+  val:
+    subject_ids: ["0000", "0001", "0002", "0003", "0004", "0005", "0006"]
+    num_workers: 0
+    batch_size: 1
+    downscale: 1
+    use_vgg: false
+    personalize: false
+  test:
+    subject_ids: ["0000", "0006"]
+    num_workers: 0
+    batch_size: 1
+    downscale: 1
+    use_vgg: false
+    personalize: false
+    # downscale: 32

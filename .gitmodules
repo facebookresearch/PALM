@@ -1,0 +1,6 @@
+[submodule "generator/lang-segment-anything"]
+	path = generator/lang-segment-anything
+	url = https://github.com/zc-alexfan/lang-segment-anything.git
+[submodule "generator/hamer"]
+	path = generator/hamer
+	url = https://github.com/zc-alexfan/hamer.git
