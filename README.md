@@ -4,7 +4,7 @@
 
 ### News
 
-🚀 Register a PALM account [here](https://forms.gle/zbNPFtJDaZP4cQmz7) for news such as code release, downloads, and future updates!
+🚀 Register [here](https://huggingface.co/datasets/shampali/PALM-Dataset) for dataset download, news such as code release, downloads, and future updates!
 
 - 2025.11.07: PALM is accepted to 3DV'26!
 
